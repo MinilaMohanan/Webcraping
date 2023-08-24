@@ -1,0 +1,27 @@
+import requests
+from bs4 import BeautifulSoup
+import os
+
+def scrape_data(url, folder_path):
+    # Send a GET request to the webpage
+    response = requests.get(url)
+
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Find student names and institution names using appropriate HTML tags and attributes
+    student_names = [tag.text for tag in soup.find_all('span', class_='student-name')]
+    institution_names = [tag.text for tag in soup.find_all('div', class_='institution')]
+
+    # Save the extracted data to a file in the specified folder
+    os.makedirs(folder_path, exist_ok=True)
+    with open(os.path.join(folder_path, 'data.txt'), 'w') as file:
+        for student_name, institution_name in zip(student_names, institution_names):
+            file.write(f"Student Name: {student_name}\n")
+            file.write(f"Institution Name: {institution_name}\n")
+            file.write('\n')
+
+# Example usage
+url = 'https://example.com'  # Replace with the actual URL
+folder_path = 'C:/path/to/save/data'  # Replace with the desired folder path
+scrape_data(url, folder_path)
